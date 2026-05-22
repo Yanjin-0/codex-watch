@@ -48,32 +48,33 @@ function parseUpdatedAt(response, text) {
     }
   }
 
-  const lines = text.split('\n').map((line) => line.trim()).filter(Boolean);
-  const labelCandidates = [
-    /(?:Last updated|Updated at|Last tweet seen at|Published at):\s*(.+)$/i,
-    /(?:Last updated|Updated at|Last tweet seen at|Published at)\s+(.+)$/i,
+  const normalized = text.replace(/\s+/g, ' ').trim();
+  const patterns = [
+    /Last Yes verdict seen:\s*(.+?)(?:\s+(?:Last @|Verdict:|TOKENS USED:|$))/i,
+    /Last @[\w.-]+ tweet seen at:\s*(.+?)(?:\s+(?:Verdict:|TOKENS USED:|$))/i,
+    /(?:Last updated|Updated at|Published at):\s*(.+?)(?:\s+(?:Verdict:|TOKENS USED:|$))/i,
+    /(?:Last updated|Updated at|Published at)\s+(.+?)(?:\s+(?:Verdict:|TOKENS USED:|$))/i,
   ];
 
-  for (const line of lines) {
-    for (const pattern of labelCandidates) {
-      const match = line.match(pattern);
-      if (match) {
-        const candidate = match[1].trim();
-        const parsed = new Date(candidate);
-        if (!Number.isNaN(parsed.getTime())) {
-          return {
-            updatedAt: parsed.toISOString(),
-            updatedAtText: candidate,
-            updatedAtSource: 'page-text',
-          };
-        }
-        return {
-          updatedAt: null,
-          updatedAtText: candidate,
-          updatedAtSource: 'page-text',
-        };
-      }
+  for (const pattern of patterns) {
+    const match = normalized.match(pattern);
+    if (!match) continue;
+
+    const candidate = match[1].trim();
+    const parsed = new Date(candidate);
+    if (!Number.isNaN(parsed.getTime())) {
+      return {
+        updatedAt: parsed.toISOString(),
+        updatedAtText: candidate,
+        updatedAtSource: 'page-text',
+      };
     }
+
+    return {
+      updatedAt: null,
+      updatedAtText: candidate,
+      updatedAtSource: 'page-text',
+    };
   }
 
   return {
