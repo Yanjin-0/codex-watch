@@ -3,6 +3,7 @@ const statusHint = document.getElementById('statusHint');
 const statusBadge = document.getElementById('statusBadge');
 const fetchedAt = document.getElementById('fetchedAt');
 const updatedAt = document.getElementById('updatedAt');
+const updatedAtLine = document.getElementById('updatedAtLine');
 const sourceUrl = document.getElementById('sourceUrl');
 const evidence = document.getElementById('evidence');
 const excerpt = document.getElementById('excerpt');
@@ -147,6 +148,7 @@ function renderStatus(data) {
         ? '目前還沒重置'
         : '還無法判斷';
   statusHint.textContent = data.evidence || data.error || '沒有更多細節。';
+  updatedAtLine.textContent = `最近更新：${formatUpdatedTime(data.updatedAt, data.updatedAtText)}`;
   setBadge(data.state);
   fetchedAt.textContent = formatTime(data.fetchedAt);
   updatedAt.textContent = formatUpdatedTime(data.updatedAt, data.updatedAtText);
