@@ -1,5 +1,5 @@
 {
-  "name": "desktools-codex-reset-watch",
+  "name": "codex-watch",
   "version": "1.0.0",
   "private": true,
   "description": "A small PWA that checks whether the Codex rate limit has reset.",

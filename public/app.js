@@ -71,12 +71,17 @@ function speakStatusChange(data) {
     return;
   }
 
-  const title = data.state === 'yes' ? 'Codex 額度已重置' : data.state === 'no' ? 'Codex 額度尚未重置' : 'Codex 額度狀態更新';
+  const title =
+    data.state === 'yes'
+      ? 'Codex 額度已重置'
+      : data.state === 'no'
+        ? 'Codex 額度尚未重置'
+        : 'Codex 額度狀態更新';
   const body = data.evidence || '已收到最新結果。';
   const notification = new Notification(title, {
     body,
-    icon: '/icon.svg',
-    badge: '/icon.svg',
+    icon: './icon.svg',
+    badge: './icon.svg',
   });
 
   setTimeout(() => notification.close(), 6000);
@@ -84,19 +89,23 @@ function speakStatusChange(data) {
 
 async function loadMeta() {
   try {
-    const res = await fetch('/api/meta');
+    const res = await fetch('api/meta');
+    if (!res.ok) {
+      throw new Error('not local');
+    }
+
     meta = await res.json();
     sourceUrl.textContent = meta.targetUrl;
     lanUrls.innerHTML = meta.urls
       .map((url) => `<a href="${url}" target="_blank" rel="noreferrer">${url}</a>`)
       .join('<br />');
-  } catch (error) {
-    lanUrls.textContent = `無法取得連線資訊：${error.message}`;
+  } catch {
+    lanUrls.textContent = '已部署到 GitHub Pages，直接分享目前網址即可。';
   }
 }
 
 async function fetchStatus() {
-  const candidates = ['/status.json', '/api/status'];
+  const candidates = ['status.json', 'api/status'];
 
   for (const url of candidates) {
     try {
@@ -119,7 +128,11 @@ function renderStatus(data) {
     sourceUrl.textContent = data.sourceUrl;
   }
   statusText.textContent =
-    data.state === 'yes' ? '看起來已經重置' : data.state === 'no' ? '目前還沒重置' : '還無法判斷';
+    data.state === 'yes'
+      ? '看起來已經重置'
+      : data.state === 'no'
+        ? '目前還沒重置'
+        : '還無法判斷';
   statusHint.textContent = data.evidence || data.error || '沒有更多細節。';
   setBadge(data.state);
   fetchedAt.textContent = formatTime(data.fetchedAt);
@@ -168,13 +181,13 @@ async function enableNotifications() {
     notifyBtn.disabled = true;
     new Notification('Codex Reset Watch', {
       body: '已開啟通知，之後狀態變化會提醒你。',
-      icon: '/icon.svg',
+      icon: './icon.svg',
     });
   }
 }
 
 async function copyMobileLink() {
-  const url = meta?.urls?.[0] || window.location.origin;
+  const url = meta?.urls?.[0] || window.location.href;
   try {
     await navigator.clipboard.writeText(url);
     copyBtn.textContent = '已複製';
@@ -192,7 +205,7 @@ copyBtn.addEventListener('click', copyMobileLink);
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
   });
 }
 

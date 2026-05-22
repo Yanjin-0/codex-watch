@@ -1,4 +1,4 @@
-# Codex Reset Watch
+# Codex Watch
 
 這是一個零依賴的小型 PWA，用來讀取 `https://hascodexratelimitreset.today/`，並把結果整理成手機與桌機都好看的狀態卡。
 
