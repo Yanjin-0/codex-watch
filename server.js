@@ -99,6 +99,14 @@ function parseUpdatedAt(response, text) {
     if (!match) continue;
 
     const candidate = match[1].trim();
+    if (/^\d{1,2}:\d{2}:\d{2}\s+ago$/i.test(candidate) || /^\d+\s+(?:second|minute|hour|day)s?\s+ago$/i.test(candidate)) {
+      return {
+        updatedAt: null,
+        updatedAtText: candidate,
+        updatedAtSource: 'page-text-relative',
+      };
+    }
+
     const parsed = new Date(candidate);
     if (!Number.isNaN(parsed.getTime())) {
       return {
