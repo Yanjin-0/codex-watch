@@ -95,6 +95,24 @@ async function loadMeta() {
   }
 }
 
+async function fetchStatus() {
+  const candidates = ['/status.json', '/api/status'];
+
+  for (const url of candidates) {
+    try {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) {
+        continue;
+      }
+      return await res.json();
+    } catch {
+      // try next source
+    }
+  }
+
+  throw new Error('無法取得狀態資料');
+}
+
 function renderStatus(data) {
   lastState = data.state;
   if (data.sourceUrl) {
@@ -118,8 +136,7 @@ async function refresh() {
   connectionState.textContent = '更新中...';
 
   try {
-    const res = await fetch('/api/status', { cache: 'no-store' });
-    const data = await res.json();
+    const data = await fetchStatus();
     const previousState = lastState;
     renderStatus(data);
 

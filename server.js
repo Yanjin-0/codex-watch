@@ -223,7 +223,7 @@ const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
 
-    if (url.pathname === '/api/status') {
+    if (url.pathname === '/api/status' || url.pathname === '/status.json') {
       const now = Date.now();
       let status = cachedStatus;
 
