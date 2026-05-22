@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Codex Reset Watch icon">
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#66e0b4"/>
+      <stop offset="100%" stop-color="#66a9ff"/>
+    </linearGradient>
+    <radialGradient id="g2" cx="35%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="110" fill="#08111f"/>
+  <circle cx="256" cy="256" r="190" fill="url(#g1)" opacity="0.18"/>
+  <circle cx="208" cy="190" r="150" fill="url(#g2)"/>
+  <path d="M170 228c0-47 39-86 86-86s86 39 86 86-39 86-86 86-86-39-86-86zm86-130c-72 0-130 58-130 130s58 130 130 130 130-58 130-130-58-130-130-130zm20 64h-40v100l84 50 20-34-64-38V162z" fill="url(#g1)"/>
+  <rect x="124" y="356" width="264" height="44" rx="22" fill="rgba(255,255,255,0.08)"/>
+  <text x="256" y="385" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="700" fill="#e9f2ff">RESET</text>
+</svg>

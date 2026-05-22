@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#08111f" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Codex Reset Watch</title>
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <p class="eyebrow">Codex 額度監看</p>
+        <h1>打開就知道今天有沒有重置</h1>
+        <p class="lede">
+          這個小工具會定時讀取 <span>hascodexratelimitreset.today</span>，把結果濃縮成一張適合手機與桌機的卡片。
+        </p>
+      </section>
+
+      <section class="panel">
+        <div class="status-row">
+          <div>
+            <p class="label">目前狀態</p>
+            <h2 id="statusText">載入中</h2>
+            <p id="statusHint" class="hint">正在連線到檢查站...</p>
+          </div>
+          <div id="statusBadge" class="badge badge-neutral">等待資料</div>
+        </div>
+
+        <div class="metrics">
+          <article>
+            <span>最後檢查</span>
+            <strong id="fetchedAt">--</strong>
+          </article>
+          <article>
+            <span>自動更新</span>
+            <strong id="pollInfo">60 秒</strong>
+          </article>
+          <article>
+            <span>來源</span>
+            <strong id="sourceUrl">--</strong>
+          </article>
+        </div>
+
+        <div class="actions">
+          <button id="refreshBtn" class="primary">立即刷新</button>
+          <button id="notifyBtn" class="secondary">開啟通知</button>
+          <button id="copyBtn" class="secondary">複製手機連結</button>
+        </div>
+
+        <div class="lanbox">
+          <p class="label">手機/平板開啟方式</p>
+          <p id="lanUrls">正在取得本機網址...</p>
+        </div>
+      </section>
+
+      <section class="panel grid">
+        <div>
+          <p class="label">判斷依據</p>
+          <p id="evidence" class="evidence">--</p>
+        </div>
+        <div>
+          <p class="label">最近幾行</p>
+          <pre id="excerpt" class="excerpt">--</pre>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span id="connectionState">準備就緒</span>
+      <span>自動刷新中</span>
+    </footer>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>

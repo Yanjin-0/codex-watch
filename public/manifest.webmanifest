@@ -1,0 +1,18 @@
+{
+  "name": "Codex Reset Watch",
+  "short_name": "Codex Watch",
+  "description": "Track whether the Codex rate limit has reset.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#08111f",
+  "theme_color": "#08111f",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
