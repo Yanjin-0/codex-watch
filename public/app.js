@@ -2,6 +2,7 @@ const statusText = document.getElementById('statusText');
 const statusHint = document.getElementById('statusHint');
 const statusBadge = document.getElementById('statusBadge');
 const fetchedAt = document.getElementById('fetchedAt');
+const updatedAt = document.getElementById('updatedAt');
 const sourceUrl = document.getElementById('sourceUrl');
 const evidence = document.getElementById('evidence');
 const excerpt = document.getElementById('excerpt');
@@ -47,6 +48,18 @@ function formatTime(value) {
   } catch {
     return value;
   }
+}
+
+function formatUpdatedTime(value, text) {
+  if (!value && !text) {
+    return '--';
+  }
+
+  if (value) {
+    return formatTime(value);
+  }
+
+  return text || '--';
 }
 
 function updateCountdownLabel() {
@@ -136,6 +149,7 @@ function renderStatus(data) {
   statusHint.textContent = data.evidence || data.error || '沒有更多細節。';
   setBadge(data.state);
   fetchedAt.textContent = formatTime(data.fetchedAt);
+  updatedAt.textContent = formatUpdatedTime(data.updatedAt, data.updatedAtText);
   evidence.textContent = data.evidence || '--';
   excerpt.textContent = (data.excerpt || []).join('\n') || '--';
   connectionState.textContent = data.ok ? '連線正常' : data.stale ? '使用暫存資料' : '連線失敗';

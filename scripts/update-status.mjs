@@ -35,6 +35,54 @@ function htmlToText(html) {
   );
 }
 
+function parseUpdatedAt(response, text) {
+  const header = response.headers.get('last-modified');
+  if (header) {
+    const parsed = new Date(header);
+    if (!Number.isNaN(parsed.getTime())) {
+      return {
+        updatedAt: parsed.toISOString(),
+        updatedAtText: header,
+        updatedAtSource: 'last-modified-header',
+      };
+    }
+  }
+
+  const lines = text.split('\n').map((line) => line.trim()).filter(Boolean);
+  const labelCandidates = [
+    /(?:Last updated|Updated at|Last tweet seen at|Published at):\s*(.+)$/i,
+    /(?:Last updated|Updated at|Last tweet seen at|Published at)\s+(.+)$/i,
+  ];
+
+  for (const line of lines) {
+    for (const pattern of labelCandidates) {
+      const match = line.match(pattern);
+      if (match) {
+        const candidate = match[1].trim();
+        const parsed = new Date(candidate);
+        if (!Number.isNaN(parsed.getTime())) {
+          return {
+            updatedAt: parsed.toISOString(),
+            updatedAtText: candidate,
+            updatedAtSource: 'page-text',
+          };
+        }
+        return {
+          updatedAt: null,
+          updatedAtText: candidate,
+          updatedAtSource: 'page-text',
+        };
+      }
+    }
+  }
+
+  return {
+    updatedAt: null,
+    updatedAtText: null,
+    updatedAtSource: null,
+  };
+}
+
 function parseStatusFromText(text) {
   const lines = text.split('\n').map((line) => line.trim()).filter(Boolean);
   const normalized = lines.join(' ');
@@ -109,10 +157,12 @@ async function fetchRemoteStatus() {
       const html = await response.text();
       const text = htmlToText(html);
       const parsed = parseStatusFromText(text);
+      const updated = parseUpdatedAt(response, text);
       return {
         ok: true,
         sourceUrl: targetUrl,
         fetchedAt: new Date().toISOString(),
+        ...updated,
         ...parsed,
       };
     } catch (error) {
@@ -127,6 +177,9 @@ const status = await fetchRemoteStatus().catch((error) => ({
   ok: false,
   sourceUrl: TARGET_URLS[0],
   fetchedAt: new Date().toISOString(),
+  updatedAt: null,
+  updatedAtText: null,
+  updatedAtSource: null,
   state: 'unknown',
   verdictText: null,
   evidence: 'Unable to reach upstream site.',

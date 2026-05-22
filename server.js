@@ -73,6 +73,54 @@ function htmlToText(html) {
   );
 }
 
+function parseUpdatedAt(response, text) {
+  const header = response.headers.get('last-modified');
+  if (header) {
+    const parsed = new Date(header);
+    if (!Number.isNaN(parsed.getTime())) {
+      return {
+        updatedAt: parsed.toISOString(),
+        updatedAtText: header,
+        updatedAtSource: 'last-modified-header',
+      };
+    }
+  }
+
+  const lines = text.split('\n').map((line) => line.trim()).filter(Boolean);
+  const labelCandidates = [
+    /(?:Last updated|Updated at|Last tweet seen at|Published at):\s*(.+)$/i,
+    /(?:Last updated|Updated at|Last tweet seen at|Published at)\s+(.+)$/i,
+  ];
+
+  for (const line of lines) {
+    for (const pattern of labelCandidates) {
+      const match = line.match(pattern);
+      if (match) {
+        const candidate = match[1].trim();
+        const parsed = new Date(candidate);
+        if (!Number.isNaN(parsed.getTime())) {
+          return {
+            updatedAt: parsed.toISOString(),
+            updatedAtText: candidate,
+            updatedAtSource: 'page-text',
+          };
+        }
+        return {
+          updatedAt: null,
+          updatedAtText: candidate,
+          updatedAtSource: 'page-text',
+        };
+      }
+    }
+  }
+
+  return {
+    updatedAt: null,
+    updatedAtText: null,
+    updatedAtSource: null,
+  };
+}
+
 function parseStatusFromText(text) {
   const lines = text.split('\n').map((line) => line.trim()).filter(Boolean);
   const normalized = lines.join(' ');
@@ -147,17 +195,19 @@ async function fetchRemoteStatus() {
 
         if (!response.ok) {
           throw new Error(`Upstream returned ${response.status}`);
-        }
+      }
 
-        const html = await response.text();
-        const text = htmlToText(html);
-        const parsed = parseStatusFromText(text);
-        const payload = {
-          ok: true,
-          sourceUrl: targetUrl,
-          fetchedAt: new Date().toISOString(),
-          ...parsed,
-        };
+      const html = await response.text();
+      const text = htmlToText(html);
+      const parsed = parseStatusFromText(text);
+      const updated = parseUpdatedAt(response, text);
+      const payload = {
+        ok: true,
+        sourceUrl: targetUrl,
+        fetchedAt: new Date().toISOString(),
+        ...updated,
+        ...parsed,
+      };
         cachedStatus = payload;
         cachedAt = Date.now();
         return payload;
@@ -235,6 +285,9 @@ const server = http.createServer(async (req, res) => {
             ok: false,
             sourceUrl: cachedStatus?.sourceUrl || TARGET_URL,
             fetchedAt: new Date().toISOString(),
+            updatedAt: cachedStatus?.updatedAt || null,
+            updatedAtText: cachedStatus?.updatedAtText || null,
+            updatedAtSource: cachedStatus?.updatedAtSource || null,
             state: cachedStatus?.state || 'unknown',
             verdictText: cachedStatus?.verdictText || null,
             evidence: cachedStatus?.evidence || 'Unable to reach upstream site.',
